@@ -4,28 +4,40 @@ git add dist -f (git add .) 前面的是打包區強制上傳 用普通上傳就
 git commit -m "0808"
 git subtree push --prefix dist origin gh-pages
 -->
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/page6/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
-    <script type="module" crossorigin src="/page6/assets/main-B5Qt9EMX.js"></script>
-  </head>
-  <body>
-    <div id="app">
-      <h1>Welcome to the Main Page</h1>
-      <nav>
-          <ul id="nav-list">
-              <li><a href="about.html">About</a></li>
-              <li><a href="src/game.html">Game</a></li>
-          </ul>
-      </nav>
-
-    <button id="add-page-button">Add Page 5</button>
-
-    <script src="script.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game</title>
+    <link id="scene-style" rel="stylesheet" href="">
+    <style>
+        @keyframes loading {
+        0% { opacity: 1;}
+        50% { opacity: 0;}
+      }
+        #initializator {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            font-family: system-ui;
+            animation: loading 1s infinite;
+        }
+    </style>
+  <script type="module" crossorigin src="/page6/assets/main-BJE6QmtB.js"></script>
+  <link rel="stylesheet" crossorigin href="/page6/assets/main-dhYp500t.css">
+</head>
+<body>
+    <div id="game_container">
+        <button id="click_to_start">click to start</button>
     </div>
-  </body>
+    <div id="initializator">Loading</div>
+</body>
 </html>
+   
