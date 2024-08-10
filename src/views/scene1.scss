@@ -1,0 +1,20 @@
+// scene1.scss
+
+@keyframes s1-0 { to { background-position-x: 120%; }}
+.s1-0{ background-image: url("/src/assets/img/s1/anim1.png"); 
+    animation: s1-0 1s steps(6) ;
+}
+.s1-1{ background-image: url("/src/assets/img/s1/s-2.png"); }
+.s1-2{ background-image: url("/src/assets/img/s1/s-3.png"); }
+.s1-3-1{ background-image: url("/src/assets/img/s1/s-7.png"); }
+.s1-3-2{ background-image: url("/src/assets/img/s1/s-8.png"); }
+.s1-3-3{ background-image: url("/src/assets/img/s1/s-9.png"); }
+.s1-3-4{ background-image: url("/src/assets/img/s1/s-10.png"); }
+.s1-4{ background-image: url("/src/assets/img/s1/s-4.png"); }
+.s1-5{ background-image: url("/src/assets/img/s1/s-5.png"); }
+.s1-6{ background-image: url("/src/assets/img/s1/s-6.png"); }
+
+
+.s1-close-1{ background-image: url("/src/assets/img/s1/s-8.png"); }
+
+

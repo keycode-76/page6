@@ -1,0 +1,24 @@
+// start.scss
+
+body {
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000000;
+    font-family: system-ui;
+}
+#click_to_start {
+    all: unset;
+    cursor: pointer;
+    padding: 0.4em 0.8em;
+    font-size: 120%;
+    background-color: #ffffff;
+    border-radius: 1px;
+    transition: all .1s;
+}
+#click_to_start:hover {
+    color: #ffffff;
+    background-color: gray;
+}
