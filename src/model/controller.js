@@ -20,12 +20,14 @@ const user = {
     scene:[], // 現在的場景所有標記
     line:[], // 現在場景所有話
 
-    bag:[],
+    bag:[0,1,2],
+    key:[],
     boss:3, // qte
     heart:3, // heart
 };
 
 const screen_ui = document.querySelector("#screen_ui");
+const screen_bg = document.querySelector("#screen_bg");
 const scene_ux = document.querySelector("#scene_ux");
 const scene_bg = document.querySelector("#scene_bg");
 
@@ -115,6 +117,7 @@ const new_line = (id, other) => {
             case "view": // 加入ux
                 delete user.line_arr[id];
                 render_ux();
+                render_btn_bag_only();
                 break;
             case "room": // 加入ux，左右
                 delete user.line_arr[id][user.wall];
@@ -175,10 +178,7 @@ const click_ux = (event, ux_arr) => {
     }
 };
 
-const btn_return = createDiv("btn_return", "ui_btns");
-const btn_bag = createDiv("btn_bag", "ui_btns");
-const btn_left = createDiv("btn_left", "ui_btns");
-const btn_right = createDiv("btn_right", "ui_btns");
+// ________________ QTE _________________ //
 
 const qte_div = createDiv("qte_div",);
 const qte_btn = createDiv("qte_btn","ui_btns");
@@ -189,7 +189,6 @@ const feedback = createDiv("feedback", "gmui_btns");
 const userHeart = createDiv("userHeart", );
 const bossHeart = createDiv("bossHeart", );
 let qte_start = 0;
-
 
 function startQTE() {
     qte_start = Date.now();
@@ -294,20 +293,17 @@ lines_btn.addEventListener("click", debounce(() => {
 }, 300));
 
 
-
-
-
-
 // ________________ 按鈕 _________________ //
+const btn_return = createDiv("btn_return", "ui_btns");
+const btn_bag = createDiv("btn_bag", "ui_btns");
+const btn_left = createDiv("btn_left", "ui_btns");
+const btn_right = createDiv("btn_right", "ui_btns");
 
-const render_btn_return = () => {
-    screen_ui.append( btn_return, btn_bag );
-};
+const render_btn_bag_only = () => { screen_ui.append( btn_bag ); };
+const render_btn_return = () => { screen_ui.append( btn_return, btn_bag );};
 btn_return.addEventListener("click", () => { new_scene(user.last_id);});
 
-const render_btn_LR = () => {
-    screen_ui.append(btn_left, btn_right, btn_bag );
-};
+const render_btn_LR = () => { screen_ui.append(btn_left, btn_right, btn_bag );};
 btn_left.addEventListener("click", () => {
     if (user.wall>1) {
         user.wall-= 1;
@@ -324,19 +320,141 @@ btn_right.addEventListener("click", () => {
     }
     new_scene(user.scene.id);
 });
-
 const render_btn_qte = () => {
     qte_box.appendChild(qte_bar)
-    qte_div.append(userHeart, bossHeart, feedback, qte_box, qte_dot, qte_btn,  )
+    qte_div.append(userHeart, bossHeart, feedback, qte_box, qte_dot, qte_btn )
     screen_ui.appendChild( qte_div );
 };
 qte_btn.addEventListener("click", () => detect_qte());
-
 end_retry.addEventListener("click", () => { 
     user.wall = 1;
     new_scene(0, user.scene_arr); 
-})
+});
 
+// ________________ 包包物件 _________________ //
+const bag_div = createDiv("bag_div");
+const bag_slots = createDiv("bag_slots", "bag_slots_close");
+const bag_view = createDiv("bag_view");
+const bag_slots_btn = createDiv("bag_slots_btn");
+const bag_use_btn = createDiv("bag_use_btn");
+
+const bag_arr = {
+    0: ["bag_map"],
+    1: ["bag_key_0", "", ""],
+    2: ["bag_key_1", "", ""],
+};
+let bag_show = false;
+let bag_slots_show = false;
+
+btn_bag.addEventListener("click", debounce(() => {
+    if (bag_show) {
+        screen_bg.removeChild(bag_div); // 隱藏 bag
+    } else {
+        render_bag(); // 顯示 bag
+    }
+    bag_show = !bag_show;
+}, 300));
+
+bag_slots_btn.addEventListener("click", () => {
+    if (bag_slots_show) {
+        bag_slots_close();
+    } else {
+        bag_slots_open();
+    }
+});
+
+const render_bag = () => {
+    bag_div.innerHTML = "";
+    bag_slots.innerHTML = "";
+    bag_div.append(bag_view, bag_slots, bag_slots_btn);
+
+    for (let i = 0; i < Object.keys(bag_arr).length; i++) {
+        const bagElement = createDiv(0, "bag_icon");
+        bagElement.id = bag_arr[i][0];
+        bagElement.draggable = true;
+        detect_bag_drag(bagElement, i);
+        bag_slots.appendChild(bagElement);
+    }
+    screen_bg.appendChild(bag_div);
+};
+
+const bag_slots_close = () => {
+    bag_slots_show = false;
+    bag_view.style.height = "100%";
+    bag_slots.className = "bag_slots_close"
+};
+
+const bag_slots_open = () => {
+    bag_slots_show = true;
+    bag_view.style.height = "0%";
+    bag_slots.className = "bag_slots_open"
+};
+
+let drag_item = null;
+let drag_index = null;
+let offsetX = 0;
+let offsetY = 0;
+
+// const bag_map = document.querySelector("#bag_map");
+// const bag_key_0 = document.querySelector("#bag_key_0");
+// const bag_key_1 = document.querySelector("#bag_key_1");
+// bag_key_0.addEventListener("click", () => {
+//     bag_view.appendChild(bag_use_btn);
+//     user.key[0] = bag_arr[0][1]
+//     user.key[1] = bag_arr[0][2]
+// });
+// bag_use_btn.addEventListener("click", () => {
+//     if (user.scene.bg === user.key[0]) {
+//         new_scene(user.key[1])
+//     }
+// });
+function detect_bag_drag(element, index) {
+    element.addEventListener('touchstart', function(e) {
+        if (!bag_slots_show) return;  // 只有在 bag_slots_show 為 true 時啟用拖曳
+        drag_item = element;
+        drag_index = index;
+
+        // 計算偏移量
+        const rect = element.getBoundingClientRect();
+        offsetX = e.targetTouches[0].clientX - rect.left;
+        offsetY = e.targetTouches[0].clientY - rect.top;
+    });
+
+    element.addEventListener('touchmove', function(e) {
+        if (!drag_item) return;
+        const touchLocation = e.targetTouches[0];
+        drag_item.style.position = 'absolute';
+        
+        drag_item.style.left = touchLocation.pageX + 'px';
+        drag_item.style.top = touchLocation.pageY + 'px';
+        console.log(`page X: ${touchLocation.pageX}, page Y: ${touchLocation.pageY}`);
+
+    });
+
+    element.addEventListener('mousemove', (e) => {
+        const rect = element.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left; // 鼠標相對於元素的 X 坐標
+        const mouseY = e.clientY - rect.top;  // 鼠標相對於元素的 Y 坐標
+        // drag_item.style.left = mouseX + 'px';
+        // drag_item.style.top = mouseY + 'px';
+        // console.log(`Mouse X: ${mouseX}, Mouse Y: ${mouseY}`);
+    });
+
+    element.addEventListener('touchend', function(e) {
+        if (!drag_item) return;
+        const newIndex = Math.floor((e.changedTouches[0].pageX - bag_slots.offsetLeft) / drag_item.offsetWidth);
+        const validNewIndex = Math.max(0, Math.min(Object.keys(bag_arr).length - 1, newIndex));
+        
+        // 交換 bag_arr 中的位置
+        const temp = bag_arr[drag_index];
+        bag_arr[drag_index] = bag_arr[validNewIndex];
+        bag_arr[validNewIndex] = temp;
+        
+        render_bag();  // 重新渲染背包內容
+        drag_item = null;
+        drag_index = null;
+    });
+}
 
 
 // ________________ 物件神器 _________________ //
@@ -356,5 +474,5 @@ function debounce(callbackFunction, delayTime = 100) {
       timerId = setTimeout(() => callbackFunction.apply(this, functionArguments), 
       delayTime);
     };
-  };
+};
 
