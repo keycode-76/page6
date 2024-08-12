@@ -1,10 +1,5 @@
 // main.scss
 
-// @keyframes cursor_anim {
-//     to { background-position-x: -600%; }}
-// .click_anim {
-//     animation: cursor_anim .3s steps(6);
-// }
 // @keyframes btn_click_anim {
 //     to { background-position-x: 200%; }}
 // .btn_click_anim {
@@ -24,21 +19,6 @@
 //     0% { transform: translateY(0);}
 //     40% { transform: translateY(-3px);opacity: 1;}
 //     100% { transform: translateY(10px); opacity: 0;}
-// }
-// .hide_anim {
-//     animation: hide_anim .8s ease-in-out;
-// }
-// .show_anim {
-//     animation: show_anim .3s ease-out;
-// }
-// #cursor {
-//     position: absolute;
-//     width: 30px;
-//     height: 30px;
-//     background-image: url("/assets/ui/cursor_anim.png");
-//     z-index: 5;
-//     pointer-events: none;
-//     // animation: cursor_ani m .3s steps(6) infinite ;
 // }
 body {
     // height: 100vh;
@@ -326,6 +306,11 @@ $color1:#6600ff;
     }
 }
 
+#bag_key_btn {
+    width: 100px;
+    height: 20px;
+    background: black;
+}
 #bag_key_0 {
     background-color: #6600ff;
 }

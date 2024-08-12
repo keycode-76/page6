@@ -21,7 +21,7 @@ const user = {
     line:[], // 現在場景所有話
 
     bag:[0,1,2],
-    key:[],
+    key:{door:"", next:""},
     boss:3, // qte
     heart:3, // heart
 };
@@ -336,14 +336,14 @@ const bag_div = createDiv("bag_div");
 const bag_slots = createDiv("bag_slots", "bag_slots_close");
 const bag_view = createDiv("bag_view");
 const bag_slots_btn = createDiv("bag_slots_btn");
-const bag_use_btn = createDiv("bag_use_btn");
+const bag_key_btn = createDiv("bag_key_btn");
 
 const bag_arr = {
-    0: ["bag_map"],
-    1: ["bag_key_0", "", ""],
-    2: ["bag_key_1", "", ""],
-};
-let bag_show = false;
+    0: { bg:"bag_map", type:"map", },
+    1: { bg:"bag_key_0", type:"key", door:"s1-2", next:"s1-3"},
+    2: { bg:"bag_key_1", type:"key", door:"s1-3-2", next:"s1-3-4"},
+}
+let bag_show = false;' '
 let bag_slots_show = false;
 
 btn_bag.addEventListener("click", debounce(() => {
@@ -370,14 +370,33 @@ const render_bag = () => {
 
     for (let i = 0; i < Object.keys(bag_arr).length; i++) {
         const bagElement = createDiv(0, "bag_icon");
-        bagElement.id = bag_arr[i][0];
+        bagElement.id = bag_arr[i].bg;
         bagElement.draggable = true;
         detect_bag_drag(bagElement, i);
         bag_slots.appendChild(bagElement);
+        bagElement.addEventListener("click", () => {
+            if (bag_view.className !== bag_arr[i].bg) {
+                bag_view.className = bag_arr[i].bg;
+                if (bag_arr[i].type === "key") {
+                    bag_view.appendChild(bag_key_btn);
+                    user.key.door = bag_arr[i].door;
+                    user.key.next = bag_arr[i].next;
+                }
+            } else {
+                bag_view.className = "";
+                bag_view.innerHTML = "";
+            }
+        });
     }
     screen_bg.appendChild(bag_div);
 };
 
+bag_key_btn.addEventListener("click", () => {
+    console.log(user.scene.bg, user.key.door)
+    if (user.scene.bg === user.key.door) {
+        new_scene(user.key.next)
+    }
+});
 const bag_slots_close = () => {
     bag_slots_show = false;
     bag_view.style.height = "100%";
@@ -395,19 +414,6 @@ let drag_index = null;
 let offsetX = 0;
 let offsetY = 0;
 
-// const bag_map = document.querySelector("#bag_map");
-// const bag_key_0 = document.querySelector("#bag_key_0");
-// const bag_key_1 = document.querySelector("#bag_key_1");
-// bag_key_0.addEventListener("click", () => {
-//     bag_view.appendChild(bag_use_btn);
-//     user.key[0] = bag_arr[0][1]
-//     user.key[1] = bag_arr[0][2]
-// });
-// bag_use_btn.addEventListener("click", () => {
-//     if (user.scene.bg === user.key[0]) {
-//         new_scene(user.key[1])
-//     }
-// });
 function detect_bag_drag(element, index) {
     element.addEventListener('touchstart', function(e) {
         if (!bag_slots_show) return;  // 只有在 bag_slots_show 為 true 時啟用拖曳
@@ -425,20 +431,19 @@ function detect_bag_drag(element, index) {
         const touchLocation = e.targetTouches[0];
         drag_item.style.position = 'absolute';
         
-        drag_item.style.left = touchLocation.pageX + 'px';
-        drag_item.style.top = touchLocation.pageY + 'px';
+        drag_item.style.left = e.pageX + 'px';
+        drag_item.style.top = e.pageY + 'px';
         console.log(`page X: ${touchLocation.pageX}, page Y: ${touchLocation.pageY}`);
 
     });
 
-    element.addEventListener('mousemove', (e) => {
-        const rect = element.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left; // 鼠標相對於元素的 X 坐標
-        const mouseY = e.clientY - rect.top;  // 鼠標相對於元素的 Y 坐標
-        // drag_item.style.left = mouseX + 'px';
-        // drag_item.style.top = mouseY + 'px';
-        // console.log(`Mouse X: ${mouseX}, Mouse Y: ${mouseY}`);
-    });
+    // document.addEventListener("mousemove", (e) => moveItem(e, watere
+        // const moveItem = (e, item) => {
+        //     let x = e.pageX;
+        //     let y = e.pageY;
+        //     item.style.left = x + "px";
+        //     item.style.top = y + "px";
+        // };
 
     element.addEventListener('touchend', function(e) {
         if (!drag_item) return;
